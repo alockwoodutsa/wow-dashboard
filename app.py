@@ -1,3 +1,4 @@
+import os
 import time
 from urllib.parse import quote
 from flask import Flask, render_template, request
@@ -9,8 +10,11 @@ app = Flask(__name__)
 api_cache = {}
 CACHE_DURATION = 300  # 5 minutes
 
-CLIENT_ID = "9ff068629dbd4fdca7ec8e1a4de2851c"
-CLIENT_SECRET = "qJn32rXyUq3ceo9BCY4dMdtVUofYz73Y"
+CLIENT_ID = os.environ.get("CLIENT_ID")
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+
+if not CLIENT_ID or not CLIENT_SECRET:
+    raise RuntimeError("Missing CLIENT_ID or CLIENT_SECRET environment variables.")
 
 
 def cached_request(url, headers=None, params=None):
