@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WoW Character Dashboard</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+        }
+        .nav {
+            margin-bottom: 30px;
+        }
+        .nav a {
+            color: #60a5fa;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .nav a:hover {
+            background-color: #1e293b;
+        }
+        .card {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            padding: 20px;
+            margin: 20px auto;
+            width: 320px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="nav">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/stats">Stats Guide</a>
+        <a href="/guild">Guild Lookup</a>
+        <a href="/history">Search History</a>
+    </div>
+
+    <h1>⚔️ WoW Character Dashboard</h1>
+    <img src="/static/faction_logo.png" alt="Horde logo with a bold stylized red emblem set against a dark background, conveying a fierce and powerful fantasy gaming tone for the World of Warcraft dashboard" width="200">
+    <form method="POST">
+        <input name="name" placeholder="Character Name" required>
+        <input name="realm" placeholder="Realm (e.g. illidan)" required>
+        <br>
+        <button type="submit">Search</button>
+    </form>
+
+    {% if character %}
+	html = f"""
+<html>
+  <body>
+    <h1>WoW Character</h1>
+    <img src="{image_url}" alt="Character Image">
+  </body>
+</html>
+"""
+
+with open("character.html", "w") as f:
+    f.write(html)
+    <div class="card">
+        <h2>{{ character.name }}</h2>
+        <p>Level: {{ character.level }}</p>
+        <p>Item Level: {{ character.ilvl }}</p>
+        <h3>Primary Stats</h3>
+        <p>{{ character.highest_primary_stat|title }}: {{ character.highest_primary_value }}</p>
+        <h3>Secondary Stats</h3>
+        <p>Critical Strike: {{ character.critical_strike }}%</p>
+        <p>Haste: {{ character.haste }}%</p>
+        <p>Mastery: {{ character.mastery }}%</p>
+        <p>Versatility: {{ character.versatility }}%</p>
+        <p>Leech: {{ character.leech }}%</p>
+        <p>Avoidance: {{ character.avoidance }}%</p>
+        <p>Speed: {{ character.speed }}%</p>
+        <h3>Mythic+ This Week</h3>
+        <p>Total Runs: {{ character.total_weekly_runs }}</p>
+        {% if character.weekly_runs %}
+        <p><strong>Best Runs:</strong></p>
+        <ul>
+        {% for run in character.weekly_runs %}
+            <li>{{ run.dungeon }}: +{{ run.level }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+<canvas id="statsChart" width="300" height="300"></canvas>
+</body>
+</html>
+{% if character %}
+<script>
+const ctx = document.getElementById('statsChart');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Critical Strike', 'Haste', 'Mastery', 'Versatility', 'Leech', 'Avoidance', 'Speed'],
+        datasets: [{
+            label: 'Stats',
+            data: [
+                {{ character.critical_strike }},
+                {{ character.haste }},
+                {{ character.mastery }},
+                {{ character.versatility }},
+                {{ character.leech }},
+                {{ character.avoidance }},
+                {{ character.speed }}
+            ],
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.8)',   // Critical Strike - Teal
+                'rgba(153, 102, 255, 0.8)',  // Haste - Purple
+                'rgba(255, 159, 64, 0.8)',   // Mastery - Orange
+                'rgba(199, 199, 199, 0.8)',  // Versatility - Gray
+                'rgba(255, 99, 255, 0.8)',   // Leech - Pink
+                'rgba(99, 255, 132, 0.8)',   // Avoidance - Green
+                'rgba(132, 99, 255, 0.8)'    // Speed - Indigo
+            ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(199, 199, 199, 1)',
+                'rgba(255, 99, 255, 1)',
+                'rgba(99, 255, 132, 1)',
+                'rgba(132, 99, 255, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: 'white'
+                }
+            },
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                    color: 'white'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: 'white'
+                }
+            }
+        }
+    }
+});
+</script>
+{% endif %}

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guild Search - WoW Character Dashboard</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding: 20px;
+        }
+        .nav {
+            margin-bottom: 30px;
+        }
+        .nav a {
+            color: #60a5fa;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .nav a:hover {
+            background-color: #1e293b;
+        }
+        .card {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            padding: 30px;
+            margin: 20px auto;
+            width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .guild-info {
+            text-align: left;
+            margin: 20px 0;
+        }
+        .guild-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .guild-stat:last-child {
+            border-bottom: none;
+        }
+        .member-list {
+            margin-top: 20px;
+        }
+        .member {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .member-level {
+            color: #60a5fa;
+            font-weight: bold;
+        }
+        .member-rank {
+            color: #fbbf24;
+        }
+        .member-rating {
+            color: #fbbf24;
+            font-weight: bold;
+            margin-left: auto;
+        }
+        input, button {
+            padding: 12px;
+            margin: 8px;
+            border-radius: 5px;
+            border: none;
+        }
+        input {
+            background-color: #1e293b;
+            color: white;
+            width: 200px;
+        }
+        input::placeholder {
+            color: #9ca3af;
+        }
+        button {
+            background-color: #60a5fa;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #3b82f6;
+        }
+        .error {
+            color: #ef4444;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/stats">Stats Guide</a>
+        <a href="/guild">Guild Lookup</a>
+        <a href="/history">Search History</a>
+    </div>
+
+    <h1>🏰 Guild Search 🏰</h1>
+
+    <div class="card">
+        <h2>Search for a Guild</h2>
+        <form method="POST">
+            <input name="guild_name" placeholder="Guild Name (e.g. The Bad and the Ugly)" required>
+            <input name="realm" placeholder="Realm (e.g. area-52)" required>
+            <br>
+            <button type="submit">Search Guild</button>
+        </form>
+        
+        <p style="font-size: 14px; color: #9ca3af; margin-top: 10px;">
+            <em>Note: Large guilds may take 10-30 seconds to load due to API limitations</em>
+        </p>
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if guild %}
+        <div class="guild-info">
+            <h3>{{ guild.name }}</h3>
+            <div class="guild-stat">
+                <span>Realm:</span>
+                <span>{{ guild.realm }}</span>
+            </div>
+            <div class="guild-stat">
+                <span>Faction:</span>
+                <span>{{ guild.faction }}</span>
+            </div>
+            <div class="guild-stat">
+                <span>Member Count:</span>
+                <span>{{ guild.member_count }}</span>
+            </div>
+            <div class="guild-stat">
+                <span>Max Level Members:</span>
+                <span>{{ guild.max_level_count }}</span>
+            </div>
+            <div class="guild-stat">
+                <span>Weekly M+ Runs:</span>
+                <span>{{ guild.total_weekly_runs }} <small>(sampled)</small></span>
+            </div>
+            <div class="guild-stat">
+                <span>Achievement Points:</span>
+                <span>{{ guild.achievement_points }}</span>
+            </div>
+            {% if guild.description %}
+            <div class="guild-stat">
+                <span>Description:</span>
+                <span>{{ guild.description }}</span>
+            </div>
+            {% endif %}
+
+            <h4>Guild Master</h4>
+            <div class="member">
+                <span>{{ guild.guild_master }}</span>
+                <span class="member-rank">Guild Master</span>
+            </div>
+
+            <h4>Top Members (by Mythic+ Rating) <small>- Sampled</small></h4>
+            <div class="member-list">
+                {% for member in guild.top_members %}
+                <div class="member">
+                    <span>{{ member.name }}</span>
+                    <span class="member-level">Level {{ member.level }}</span>
+                    <span class="member-rating">{{ member.mythic_rating }} M+ Rating</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
